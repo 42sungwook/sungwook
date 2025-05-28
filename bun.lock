@@ -42,8 +42,8 @@
         "typescript-eslint": "^8.19.0",
       },
     },
-    "apps/sungwook": {
-      "name": "@sungwook/sungwook",
+    "apps/blog": {
+      "name": "@sungwook/blog",
       "version": "0.0.1",
     },
   },
@@ -608,7 +608,7 @@
 
     "@sinonjs/fake-timers": ["@sinonjs/fake-timers@10.3.0", "", { "dependencies": { "@sinonjs/commons": "^3.0.0" } }, "sha512-V4BG07kuYSUkTCSBHG8G8TNhM+F19jXFWnQtzj+we8DrkpSBCee9Z3Ms8yiGer/dlmhe35/Xdgyo3/0rQKg7YA=="],
 
-    "@sungwook/sungwook": ["@sungwook/sungwook@workspace:apps/sungwook"],
+    "@sungwook/blog": ["@sungwook/blog@workspace:apps/blog"],
 
     "@svgr/babel-plugin-add-jsx-attribute": ["@svgr/babel-plugin-add-jsx-attribute@8.0.0", "", { "peerDependencies": { "@babel/core": "^7.0.0-0" } }, "sha512-b9MIk7yhdS1pMCZM8VeNfUlSKVRhsHZNMl5O9SfaX0l0t5wjdgu4IDzGB8bpnGBBOjGST3rRFVsaaEtI4W6f7g=="],
 
