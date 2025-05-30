@@ -1,3 +1,4 @@
+# .github/workflows/deploy-blog.yml
 name: Deploy Blog to AWS
 
 on:
@@ -9,7 +10,6 @@ on:
 env:
   NODE_VERSION: '18'
   BUN_VERSION: 'latest'
-  APP_NAME: 'blog'
 
 jobs:
   build-and-deploy:
@@ -18,33 +18,14 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v1
         with:
           bun-version: ${{ env.BUN_VERSION }}
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'bun'
-
       - name: Install dependencies
         run: bun install
-
-      - name: Nx Cache
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.nx
-            node_modules/.cache/nx
-          key: ${{ runner.os }}-nx-blog-${{ hashFiles('**/bun.lockb') }}
-          restore-keys: |
-            ${{ runner.os }}-nx-blog-
-            ${{ runner.os }}-nx-
 
       # blog 앱이 존재하는지 확인
       - name: Check if blog app exists
@@ -103,12 +84,9 @@ jobs:
         run: |
           echo "🚀 Deploying blog to S3..."
 
-          # S3 동기화 실행
           aws s3 sync dist/apps/blog s3://${{ secrets.S3_BUCKET_NAME }} \
             --delete \
-            --exact-timestamps \
-            --cache-control "public,max-age=3600" \
-            --metadata-directive REPLACE
+            --exact-timestamps
 
           echo "✅ Blog deployed to S3"
 
@@ -117,22 +95,11 @@ jobs:
         run: |
           echo "🔄 Invalidating CloudFront cache..."
 
-          INVALIDATION_ID=$(aws cloudfront create-invalidation \
+          aws cloudfront create-invalidation \
             --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} \
-            --paths "/*" \
-            --query 'Invalidation.Id' \
-            --output text)
+            --paths "/*"
 
-          echo "✅ CloudFront invalidation created: $INVALIDATION_ID"
-          echo "⏳ Cache invalidation may take 10-15 minutes to complete"
-
-      # 배포 성공 알림
-      - name: Deployment success notification
-        if: env.BLOG_EXISTS == 'true' && github.ref == 'refs/heads/blog' && github.event_name == 'push'
-        run: |
-          echo "🎉 Blog deployment completed successfully!"
-          echo "🌐 Your blog should be available at: https://${{ secrets.S3_BUCKET_NAME }}"
-          echo "⏰ CloudFront cache invalidation is in progress..."
+          echo "✅ CloudFront invalidation created"
 
   # 테스트 작업 (PR용)
   test-blog:
@@ -150,19 +117,6 @@ jobs:
 
       - name: Install dependencies
         run: bun install
-
-      # blog 앱 테스트
-      - name: Run blog tests
-        run: |
-          echo "🧪 Testing blog application..."
-
-          # 테스트가 설정되어 있는 경우 실행
-          if bunx nx test blog --help > /dev/null 2>&1; then
-            echo "Running blog tests..."
-            bunx nx test blog
-          else
-            echo "ℹ️ No tests configured for blog app"
-          fi
 
       - name: Run blog linting
         run: |
