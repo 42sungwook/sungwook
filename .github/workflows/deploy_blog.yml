@@ -1,0 +1,190 @@
+name: Deploy Blog to AWS
+
+on:
+  push:
+    branches: [blog]
+  pull_request:
+    branches: [blog]
+
+env:
+  NODE_VERSION: '18'
+  BUN_VERSION: 'latest'
+  APP_NAME: 'blog'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: ${{ env.BUN_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'bun'
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Nx Cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.nx
+            node_modules/.cache/nx
+          key: ${{ runner.os }}-nx-blog-${{ hashFiles('**/bun.lockb') }}
+          restore-keys: |
+            ${{ runner.os }}-nx-blog-
+            ${{ runner.os }}-nx-
+
+      # blog 앱이 존재하는지 확인
+      - name: Check if blog app exists
+        run: |
+          if bunx nx show project blog > /dev/null 2>&1; then
+            echo "✅ Blog app found"
+            echo "BLOG_EXISTS=true" >> $GITHUB_ENV
+          else
+            echo "❌ Blog app not found"
+            echo "Available apps:"
+            bunx nx show projects
+            echo "BLOG_EXISTS=false" >> $GITHUB_ENV
+            exit 1
+          fi
+
+      # blog 앱만 빌드
+      - name: Build blog application
+        if: env.BLOG_EXISTS == 'true'
+        run: |
+          echo "🏗️ Building blog application..."
+          bunx nx build blog
+
+          # 빌드 결과 확인
+          echo "📁 Build output:"
+          ls -la dist/apps/blog/ || ls -la apps/blog/doc_build/ || echo "Build output not found"
+
+          # RSPress 빌드 결과 처리 (필요한 경우)
+          if [ -d "apps/blog/doc_build" ]; then
+            echo "📚 RSPress build detected, copying to standard dist location"
+            mkdir -p dist/apps/blog
+            cp -r apps/blog/doc_build/* dist/apps/blog/
+            echo "✅ RSPress content copied"
+          fi
+
+          # 최종 빌드 결과 확인
+          if [ -d "dist/apps/blog" ] && [ "$(ls -A dist/apps/blog)" ]; then
+            echo "✅ Blog build successful"
+            echo "📄 Build contents:"
+            ls -la dist/apps/blog/
+          else
+            echo "❌ Blog build failed - no output found"
+            exit 1
+          fi
+
+      - name: Configure AWS credentials
+        if: env.BLOG_EXISTS == 'true'
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      # blog 브랜치에 푸시할 때만 배포 (PR은 제외)
+      - name: Deploy blog to S3
+        if: env.BLOG_EXISTS == 'true' && github.ref == 'refs/heads/blog' && github.event_name == 'push'
+        run: |
+          echo "🚀 Deploying blog to S3..."
+
+          # S3 동기화 실행
+          aws s3 sync dist/apps/blog s3://${{ secrets.S3_BUCKET_NAME }} \
+            --delete \
+            --exact-timestamps \
+            --cache-control "public,max-age=3600" \
+            --metadata-directive REPLACE
+
+          echo "✅ Blog deployed to S3"
+
+      - name: Invalidate CloudFront cache
+        if: env.BLOG_EXISTS == 'true' && github.ref == 'refs/heads/blog' && github.event_name == 'push'
+        run: |
+          echo "🔄 Invalidating CloudFront cache..."
+
+          INVALIDATION_ID=$(aws cloudfront create-invalidation \
+            --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} \
+            --paths "/*" \
+            --query 'Invalidation.Id' \
+            --output text)
+
+          echo "✅ CloudFront invalidation created: $INVALIDATION_ID"
+          echo "⏳ Cache invalidation may take 10-15 minutes to complete"
+
+      # 배포 성공 알림
+      - name: Deployment success notification
+        if: env.BLOG_EXISTS == 'true' && github.ref == 'refs/heads/blog' && github.event_name == 'push'
+        run: |
+          echo "🎉 Blog deployment completed successfully!"
+          echo "🌐 Your blog should be available at: https://${{ secrets.S3_BUCKET_NAME }}"
+          echo "⏰ CloudFront cache invalidation is in progress..."
+
+  # 테스트 작업 (PR용)
+  test-blog:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: ${{ env.BUN_VERSION }}
+
+      - name: Install dependencies
+        run: bun install
+
+      # blog 앱 테스트
+      - name: Run blog tests
+        run: |
+          echo "🧪 Testing blog application..."
+
+          # 테스트가 설정되어 있는 경우 실행
+          if bunx nx test blog --help > /dev/null 2>&1; then
+            echo "Running blog tests..."
+            bunx nx test blog
+          else
+            echo "ℹ️ No tests configured for blog app"
+          fi
+
+      - name: Run blog linting
+        run: |
+          echo "🔍 Linting blog application..."
+
+          # 린팅이 설정되어 있는 경우 실행
+          if bunx nx lint blog --help > /dev/null 2>&1; then
+            echo "Running blog linting..."
+            bunx nx lint blog
+          else
+            echo "ℹ️ No linting configured for blog app"
+          fi
+
+      - name: Build check for blog
+        run: |
+          echo "🏗️ Build check for blog application..."
+          bunx nx build blog
+
+          # 빌드 결과 확인
+          if [ -d "dist/apps/blog" ] || [ -d "apps/blog/doc_build" ]; then
+            echo "✅ Blog build check passed"
+          else
+            echo "❌ Blog build check failed"
+            exit 1
+          fi
