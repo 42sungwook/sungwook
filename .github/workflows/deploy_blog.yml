@@ -84,7 +84,7 @@ jobs:
         run: |
           echo "🚀 Deploying blog to S3..."
 
-          aws s3 sync dist/apps/blog s3://${{ secrets.S3_BUCKET_NAME }} \
+          aws s3 sync dist/apps/blog s3://${{ secrets.BLOG_S3_BUCKET_NAME }} \
             --delete \
             --exact-timestamps
 
@@ -96,7 +96,7 @@ jobs:
           echo "🔄 Invalidating CloudFront cache..."
 
           aws cloudfront create-invalidation \
-            --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} \
+            --distribution-id ${{ secrets.BLOG_CLOUDFRONT_DISTRIBUTION_ID }} \
             --paths "/*"
 
           echo "✅ CloudFront invalidation created"
