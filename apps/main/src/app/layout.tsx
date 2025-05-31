@@ -1,22 +1,22 @@
-import type { Metadata } from 'next'
-import { cookies } from 'next/headers'
-import './globals.css'
-import Header from '@/app/_components/Header'
-import Footer from '@/app/_components/Footer'
-import { Analytics } from '@vercel/analytics/react'
+import type { Metadata } from 'next';
+import { cookies } from 'next/headers';
+import './globals.css';
+import Header from '@/app/_components/Header';
+import Footer from '@/app/_components/Footer';
+import { Analytics } from '@vercel/analytics/react';
 
 export const metadata: Metadata = {
   title: 'SUNGWOOK.DEV',
-  description: 'Portfolio of Sungwook Kim'
-}
+  description: 'Portfolio of Sungwook Kim',
+};
 
-export default function RootLayout({
-  children
+export default async function RootLayout({
+  children,
 }: Readonly<{
-  children: React.ReactNode
+  children: React.ReactNode;
 }>) {
-  const cookieStore = cookies()
-  const isDark = cookieStore.get('mode')?.value === 'true' ? true : false
+  const cookieStore = await cookies();
+  const isDark = cookieStore.get('mode')?.value === 'true' ? true : false;
   return (
     <html
       lang="ko"
@@ -29,5 +29,5 @@ export default function RootLayout({
         <Analytics />
       </body>
     </html>
-  )
+  );
 }

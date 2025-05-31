@@ -1,7 +1,7 @@
-import { headers } from 'next/headers'
+import { headers } from 'next/headers';
 
-export function getDevice() {
-  const headerList = headers()
-  const device = headerList.get('x-is-mobile') ?? 'desktop'
-  return device
+export async function getDevice() {
+  const headerList = await headers();
+  const device = headerList.get('x-is-mobile') ?? 'desktop';
+  return device;
 }
