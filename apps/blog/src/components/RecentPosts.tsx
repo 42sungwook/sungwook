@@ -25,24 +25,29 @@ const RecentPosts: React.FC<RecentPostsProps> = ({ length = 5 }) => {
     .slice(0, length);
 
   return (
-    <ul>
-      <div className="flex flex-col max-w-6xl my-10 px-4">
-        {recentPosts.map((post) => (
-          <li key={post.routePath} className="relative max-w-4xl pr-50">
-            <a href={post.routePath}>
-              {post.frontmatter.thumbnail && (
-                <img
-                  className="absolute top-0 right-0 w-42 h-30"
-                  src={post.frontmatter.thumbnail}
-                  alt={post.frontmatter.title}
-                />
-              )}
-              <h2>{post.frontmatter.title}</h2>
-              <p>{post.frontmatter.description}</p>
-            </a>
-          </li>
-        ))}
-      </div>
+    <ul className="flex flex-col max-w-6xl my-10 !px-4">
+      {recentPosts.map((post) => (
+        <li
+          key={post.routePath}
+          className="relative max-w-4xl pr-50 py-4 min-h-30 !border-b !border-gray-200"
+        >
+          <a href={post.routePath}>
+            {post.frontmatter.thumbnail && (
+              <img
+                className="absolute top-4 right-0 w-42 h-30"
+                src={post.frontmatter.thumbnail}
+                alt={post.frontmatter.title}
+              />
+            )}
+            <h2 className="text-xl font-bold line-clamp-2">
+              {post.frontmatter.title}
+            </h2>
+            <p className="text-sm text-gray-500 line-clamp-2">
+              {post.frontmatter.description}
+            </p>
+          </a>
+        </li>
+      ))}
     </ul>
   );
 };

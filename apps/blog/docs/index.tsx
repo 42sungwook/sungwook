@@ -8,7 +8,7 @@ export const frontmatter = {
 const HomePage: React.FC = () => {
   return (
     <div className="screen">
-      <RecentPosts length={5} />
+      <RecentPosts length={10} />
     </div>
   );
 };
