@@ -25,6 +25,8 @@
     "docs/**/*.ts",
     "docs/**/*.tsx",
     "docs/**/*.md",
-    "docs/**/*.mdx"
+    "docs/**/*.mdx",
+    "src/**/*.ts",
+    "src/**/*.tsx"
   ]
 }
