@@ -6,6 +6,10 @@ interface PageFrontmatter {
   title: string;
 }
 
+export const frontmatter = {
+  pageType: 'custom',
+};
+
 const HomePage: React.FC = () => {
   const pageData = usePageData();
   const recentPosts = pageData.siteData.pages
@@ -20,19 +24,16 @@ const HomePage: React.FC = () => {
     .slice(0, 5);
 
   return (
-    <div>
-      <div>
-        <h2>최근 게시물</h2>
-        <ul>
-          {recentPosts.map((post) => (
-            <li key={post.routePath}>
-              <a href={post.routePath}>
-                <h3>{post.frontmatter.title}</h3>
-              </a>
-            </li>
-          ))}
-        </ul>
-      </div>
+    <div className="screen">
+      <ul>
+        {recentPosts.map((post) => (
+          <li key={post.routePath}>
+            <a href={post.routePath}>
+              <h3>{post.frontmatter.title}</h3>
+            </a>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 };
