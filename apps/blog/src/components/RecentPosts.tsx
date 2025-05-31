@@ -20,11 +20,11 @@ const RecentPosts: React.FC = () => {
     });
 
   return (
-    <ul className="flex flex-col max-w-6xl my-10 !px-4">
+    <ul className="flex flex-col justify-center items-center max-w-6xl w-full my-10 !px-4">
       {recentPosts.map((post) => (
         <li
           key={post.routePath}
-          className="relative max-w-4xl pr-50 py-4 min-h-30 !border-b !border-gray-200"
+          className="relative max-w-4xl w-full pr-50 py-4 min-h-34 !border-b !border-gray-200"
         >
           <a href={post.routePath}>
             {post.frontmatter.thumbnail && (
@@ -34,13 +34,16 @@ const RecentPosts: React.FC = () => {
                 alt={post.frontmatter.title}
               />
             )}
-            <h2 className="text-xl font-bold line-clamp-2">
+            <h2 className="text-xl font-bold mb-2 line-clamp-2">
               {post.frontmatter.title}
             </h2>
             <p className="text-sm text-gray-500 line-clamp-2">
               {post.frontmatter.description}
             </p>
           </a>
+          <p className="text-xs text-gray-500 !mt-4">
+            {post.frontmatter.create_date}
+          </p>
         </li>
       ))}
     </ul>
