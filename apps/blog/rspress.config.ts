@@ -19,6 +19,11 @@ export default defineConfig({
         '@': join(__dirname, 'src'),
       },
     },
+    tools: {
+      rspack: {
+        cache: false,
+      },
+    },
   },
   themeConfig: {
     socialLinks: [
