@@ -6,6 +6,7 @@ export default defineConfig({
   title: 'My Blog',
   description: 'My Blog Description',
   base: '/',
+  globalStyles: join(__dirname, 'src/styles/index.css'),
   builderConfig: {
     output: {
       distPath: {
