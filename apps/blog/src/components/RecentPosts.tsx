@@ -7,11 +7,7 @@ interface PageFrontmatter {
   thumbnail?: string;
 }
 
-interface RecentPostsProps {
-  length?: number;
-}
-
-const RecentPosts: React.FC<RecentPostsProps> = ({ length = 5 }) => {
+const RecentPosts: React.FC = () => {
   const pageData = usePageData();
   const recentPosts = pageData.siteData.pages
     .filter((page): page is typeof page & { frontmatter: PageFrontmatter } =>
@@ -21,8 +17,7 @@ const RecentPosts: React.FC<RecentPostsProps> = ({ length = 5 }) => {
       const dateA = new Date(a.frontmatter.create_date);
       const dateB = new Date(b.frontmatter.create_date);
       return dateB.getTime() - dateA.getTime();
-    })
-    .slice(0, length);
+    });
 
   return (
     <ul className="flex flex-col max-w-6xl my-10 !px-4">
