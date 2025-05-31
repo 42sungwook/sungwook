@@ -12,6 +12,11 @@ export default defineConfig({
         root: join(__dirname, 'dist'),
       },
     },
+    resolve: {
+      alias: {
+        '@': join(__dirname, 'src'),
+      },
+    },
   },
   themeConfig: {
     socialLinks: [
