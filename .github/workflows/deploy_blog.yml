@@ -18,6 +18,10 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
+          fetch-depth: 1
+          token: ${{ secrets.ACCESS_TOKEN }}
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v1

@@ -10,7 +10,10 @@
       "@nx/react/typings/cssmodule.d.ts",
       "@nx/react/typings/image.d.ts"
     ],
-    "rootDir": "."
+    "rootDir": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
   },
   "exclude": [
     "out-tsc",
@@ -25,6 +28,8 @@
     "docs/**/*.ts",
     "docs/**/*.tsx",
     "docs/**/*.md",
-    "docs/**/*.mdx"
+    "docs/**/*.mdx",
+    "src/**/*.ts",
+    "src/**/*.tsx"
   ]
 }

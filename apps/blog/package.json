@@ -8,6 +8,11 @@
     "preview": "rspress preview"
   },
   "devDependencies": {
-    "rspress": "^1.44.0"
+    "rspress": "^1.44.0",
+    "tailwindcss": "^4.1.8"
+  },
+  "dependencies": {
+    "@tailwindcss/postcss": "^4.1.8",
+    "postcss": "^8.5.4"
   }
 }
