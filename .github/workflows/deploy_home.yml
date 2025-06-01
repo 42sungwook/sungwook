@@ -46,28 +46,22 @@ jobs:
           fi
 
           echo "📁 Preparing deployment package..."
-          # 배포용 폴더 구성
-          mkdir -p ../../dist/apps/home
+          mkdir -p ../../dist
+          cp -r .next/standalone ../../dist/home
 
-          # Standalone 파일들 복사
-          cp -r .next/standalone/* ../../dist/apps/home/
-
-          # Static 파일들 복사
-          if [ -d ".next/static" ]; then
-            mkdir -p ../../dist/apps/home/.next
-            cp -r .next/static ../../dist/apps/home/.next/
-          fi
-
-          # Public 파일들 복사
-          if [ -d "public" ]; then
-            cp -r public ../../dist/apps/home/
+          if [ -d "public" ] && [ ! -d "../../dist/home/public" ]; then
+            cp -r public ../../dist/home/
           fi
 
           echo "📁 Final deployment package:"
-          ls -la ../../dist/apps/home/
+          ls -la ../../dist/home/
+
+          # .next 폴더 확인
+          echo "📁 Checking .next folder:"
+          find ../../dist/home -name ".next" -type d -exec ls -la {} \;
 
           echo "📊 Package size:"
-          du -sh ../../dist/apps/home/
+          du -sh ../../dist/home/
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -76,8 +70,7 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      # 동적 Next.js 앱을 위한 배포 (EC2)
-      - name: Deploy to AWS S3 (for file storage)
+      - name: Deploy to AWS S3
         run: |
           echo "🚀 Uploading build to S3..."
 
@@ -85,24 +78,22 @@ jobs:
           TIMESTAMP=$(date +%Y%m%d-%H%M%S)
           BUILD_PATH="builds/$TIMESTAMP"
 
-          # S3에 빌드 파일 업로드
-          aws s3 sync dist/apps/home s3://${{ secrets.HOME_S3_BUCKET_NAME }}/$BUILD_PATH/ \
+          # S3에 빌드 파일 업로드 - 전체 구조 그대로
+          aws s3 sync dist/home s3://${{ secrets.HOME_S3_BUCKET_NAME }}/$BUILD_PATH/ \
             --delete \
             --quiet
 
           echo "✅ Build uploaded to s3://${{ secrets.HOME_S3_BUCKET_NAME }}/$BUILD_PATH/"
 
-          # 최신 빌드 경로를 별도 파일로 저장
+          # 최신 빌드 경로 저장
           echo "$BUILD_PATH" | aws s3 cp - s3://${{ secrets.HOME_S3_BUCKET_NAME }}/latest-build.txt
 
           echo "📝 Latest build path saved"
 
-      # EC2 인스턴스에 배포 명령 전송
       - name: Deploy to EC2
         run: |
           echo "🚀 Deploying to EC2..."
 
-          # SSM을 통해 EC2에서 배포 스크립트 실행
           COMMAND_ID=$(aws ssm send-command \
             --instance-ids ${{ secrets.HOME_EC2_INSTANCE_ID }} \
             --document-name "AWS-RunShellScript" \
@@ -110,71 +101,76 @@ jobs:
               "#!/bin/bash",
               "set -e",
               
-              "# ubuntu 사용자로 전환하여 실행",
+              "# ubuntu 사용자로 전환",
               "sudo -u ubuntu bash << '\''USERSCRIPT'\''",
               "set -e",
-              "echo \"Starting deployment as ubuntu user...\"",
+              "echo \"Starting deployment...\"",
+              
+              "# 앱 디렉토리로 이동",
               "cd /home/ubuntu/app",
               
               "# S3에서 최신 빌드 경로 가져오기",
               "BUILD_PATH=$(aws s3 cp s3://${{ secrets.HOME_S3_BUCKET_NAME }}/latest-build.txt -)",
               "echo \"Downloading build: $BUILD_PATH\"",
               
-              "# 기존 빌드 백업 및 새 빌드 다운로드",
-              "rm -rf current-build.bak",
-              "if [ -d \"current-build\" ]; then mv current-build current-build.bak; fi",
-              "mkdir -p current-build",
-              
-              "# S3에서 새 빌드 다운로드",
-              "aws s3 sync s3://${{ secrets.HOME_S3_BUCKET_NAME }}/$BUILD_PATH/ ./current-build/",
-              
-              "# 의존성 설치",
-              "cd current-build",
-              "echo \"Installing production dependencies...\"",
-              "npm install --production --silent",
-              
-              "# 서버 파일 확인",
-              "echo \"Checking server files...\"",
-              "if [ -f \"server.js\" ]; then",
-              "  echo \"✅ server.js found\"",
-              "elif [ -f \"apps/home/server.js\" ]; then",
-              "  echo \"✅ apps/home/server.js found\"",
-              "else",
-              "  echo \"❌ No server.js found. Available JS files:\"",
-              "  find . -name \"*.js\" -type f | head -20",
+              "# 기존 빌드 백업",
+              "if [ -d \"current\" ]; then",
+              "  rm -rf backup",
+              "  mv current backup",
               "fi",
               
+              "# 새 빌드 다운로드 - 전체 구조 그대로",
+              "mkdir -p current",
+              "aws s3 sync s3://${{ secrets.HOME_S3_BUCKET_NAME }}/$BUILD_PATH/ ./current/",
+              
+              "# 폴더 구조 확인",
+              "echo \"Current folder structure:\"",
+              "ls -la current/",
+              
+              "# 작업 디렉토리 찾기",
+              "if [ -f \"current/server.js\" ]; then",
+              "  WORK_DIR=\"/home/ubuntu/app/current\"",
+              "elif [ -f \"current/apps/home/server.js\" ]; then",
+              "  WORK_DIR=\"/home/ubuntu/app/current/apps/home\"",
+              "else",
+              "  echo \"❌ server.js not found\"",
+              "  find current -name \"server.js\" -type f",
+              "  exit 1",
+              "fi",
+              
+              "echo \"Working directory: $WORK_DIR\"",
+              "cd $WORK_DIR",
+              
+              "# 의존성 설치",
+              "echo \"Installing dependencies...\"",
+              "npm install --production",
+              
               "# PM2로 앱 재시작",
-              "echo \"Restarting application with PM2...\"",
+              "echo \"Restarting app...\"",
               "pm2 stop home-app 2>/dev/null || true",
               "pm2 delete home-app 2>/dev/null || true",
               
-              "# 앱 시작",
-              "if [ -f \"server.js\" ]; then",
-              "  PORT=3000 pm2 start server.js --name home-app --update-env",
-              "elif [ -f \"apps/home/server.js\" ]; then",
-              "  PORT=3000 pm2 start apps/home/server.js --name home-app --update-env",
-              "else",
-              "  echo \"Starting with npm start...\"",
-              "  PORT=3000 pm2 start npm --name home-app -- start",
-              "fi",
+              "# 환경변수와 함께 시작",
+              "PORT=3000 NODE_ENV=production pm2 start server.js --name home-app --cwd $WORK_DIR",
               
               "# PM2 설정 저장",
               "pm2 save",
+              "pm2 startup systemd -u ubuntu --hp /home/ubuntu || true",
               
               "echo \"✅ Deployment completed\"",
               "pm2 status",
+              
               "USERSCRIPT"
             ]' \
-            --comment "Deploy home application to Ubuntu" \
+            --comment "Deploy home application" \
             --timeout-seconds 600 \
             --query 'Command.CommandId' \
             --output text)
 
-          echo "✅ Deployment command sent to EC2. Command ID: $COMMAND_ID"
+          echo "Command ID: $COMMAND_ID"
 
-          # 명령 실행 상태 확인
-          echo "⏳ Waiting for deployment to complete..."
+          # 배포 상태 확인
+          echo "⏳ Waiting for deployment..."
           for i in {1..30}; do
             STATUS=$(aws ssm get-command-invocation \
               --command-id $COMMAND_ID \
@@ -182,12 +178,10 @@ jobs:
               --query 'Status' \
               --output text 2>/dev/null || echo "InProgress")
             
-            echo "Deployment status: $STATUS (check $i/30)"
+            echo "Status: $STATUS (check $i/30)"
             
             if [ "$STATUS" = "Success" ]; then
-              echo "✅ Deployment completed successfully"
-              # 성공 시 로그 출력
-              echo "📝 Deployment output:"
+              echo "✅ Deployment successful"
               aws ssm get-command-invocation \
                 --command-id $COMMAND_ID \
                 --instance-id ${{ secrets.HOME_EC2_INSTANCE_ID }} \
@@ -196,60 +190,48 @@ jobs:
               break
             elif [ "$STATUS" = "Failed" ]; then
               echo "❌ Deployment failed"
-              echo "📝 Error output:"
+              echo "Error:"
               aws ssm get-command-invocation \
                 --command-id $COMMAND_ID \
                 --instance-id ${{ secrets.HOME_EC2_INSTANCE_ID }} \
                 --query 'StandardErrorContent' \
                 --output text
-              echo "📝 Standard output:"
+              echo "Output:"
               aws ssm get-command-invocation \
                 --command-id $COMMAND_ID \
                 --instance-id ${{ secrets.HOME_EC2_INSTANCE_ID }} \
                 --query 'StandardOutputContent' \
                 --output text
               exit 1
-            elif [ "$STATUS" = "TimedOut" ]; then
-              echo "⏰ Deployment timed out"
-              exit 1
             fi
             
             sleep 20
           done
 
-      # 배포 결과 확인
       - name: Verify deployment
         run: |
           echo "🔍 Verifying deployment..."
-
-          # 잠시 대기 (앱 시작 시간)
           sleep 15
 
-          # Health check
           if [ -n "${{ secrets.HOME_APP_URL }}" ]; then
-            echo "Checking app health at ${{ secrets.HOME_APP_URL }}"
+            echo "Checking app at ${{ secrets.HOME_APP_URL }}"
             for i in {1..10}; do
               if curl -f -s -o /dev/null "${{ secrets.HOME_APP_URL }}"; then
-                echo "✅ App is healthy and responding"
-                echo "🌐 App is live at: ${{ secrets.HOME_APP_URL }}"
+                echo "✅ App is live at: ${{ secrets.HOME_APP_URL }}"
                 break
               else
-                echo "⏳ Waiting for app to start... (attempt $i/10)"
+                echo "⏳ Waiting for app... (attempt $i/10)"
                 if [ $i -eq 10 ]; then
-                  echo "❌ App health check failed after 10 attempts"
-                  echo "Check EC2 logs: sudo pm2 logs home-app"
+                  echo "❌ App health check failed"
                   exit 1
                 fi
                 sleep 10
               fi
             done
-          else
-            echo "⚠️ HOME_APP_URL not set, skipping health check"
           fi
 
-          echo "🎉 Deployment completed successfully!"
+          echo "🎉 Deployment complete!"
 
-  # 테스트 작업 (PR용)
   test-home:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
@@ -271,25 +253,22 @@ jobs:
         run: |
           echo "🔍 Linting home application..."
           if bunx nx lint home --help > /dev/null 2>&1; then
-            echo "Running home linting..."
             bunx nx lint home
           else
-            echo "ℹ️ No linting configured for home app"
+            echo "ℹ️ No linting configured"
           fi
 
       - name: Build check for home
         run: |
-          echo "🏗️ Build check for home application..."
+          echo "🏗️ Build check for home..."
           cd apps/home
           bun run build
 
           if [ -d ".next/standalone" ]; then
-            echo "✅ Home build check passed"
-            echo "📁 Build output:"
+            echo "✅ Build check passed"
             ls -la .next/standalone/
           else
-            echo "❌ Home build check failed"
-            echo "📁 Available files in .next:"
+            echo "❌ Build check failed"
             ls -la .next/
             exit 1
           fi
