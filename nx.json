@@ -24,24 +24,11 @@
       }
     },
     {
-      "plugin": "@nx/react/router-plugin",
+      "plugin": "@nx/next/plugin",
       "options": {
         "buildTargetName": "build",
         "devTargetName": "dev",
-        "startTargetName": "start",
-        "watchDepsTargetName": "watch-deps",
-        "buildDepsTargetName": "build-deps",
-        "typecheckTargetName": "typecheck"
-      }
-    },
-    {
-      "plugin": "@nx/rspack/plugin",
-      "options": {
-        "buildTargetName": "build",
-        "serveTargetName": "serve",
-        "previewTargetName": "preview",
-        "buildDepsTargetName": "build-deps",
-        "watchDepsTargetName": "watch-deps"
+        "startTargetName": "start"
       }
     },
     {
@@ -52,13 +39,13 @@
     }
   ],
   "generators": {
-    "@nx/react": {
+    "@nx/next": {
       "application": {
-        "babel": true,
         "style": "css",
-        "linter": "eslint",
-        "bundler": "rspack"
-      },
+        "linter": "eslint"
+      }
+    },
+    "@nx/react": {
       "component": {
         "style": "css"
       },
