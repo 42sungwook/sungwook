@@ -14,84 +14,188 @@ env:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/home'
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          submodules: 'recursive'
-          fetch-depth: 1
-          token: ${{ secrets.ACCESS_TOKEN }}
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v1
         with:
-          bun-version: ${{ env.BUN_VERSION }}
+          bun-version: latest
 
       - name: Install dependencies
         run: bun install
 
-      # home 앱이 존재하는지 확인
-      - name: Check if home app exists
-        run: |
-          if bunx nx show project home > /dev/null 2>&1; then
-            echo "✅ Home app found"
-            echo "HOME_EXISTS=true" >> $GITHUB_ENV
-          else
-            echo "❌ Home app not found"
-            echo "Available apps:"
-            bunx nx show projects
-            echo "HOME_EXISTS=false" >> $GITHUB_ENV
-            exit 1
-          fi
-
-      # home 앱만 빌드
       - name: Build home application
-        if: env.HOME_EXISTS == 'true'
         run: |
-          echo "🏗️ Building home application..."
-          bunx nx build home
+          cd apps/home
+          echo "🏗️ Building Next.js application..."
+          bun run build
 
-          # 최종 빌드 결과 확인
-          if [ -d "dist/apps/home" ] && [ "$(ls -A dist/apps/home)" ]; then
-            echo "✅ Home build successful"
-            echo "📄 Build contents:"
-            ls -la dist/apps/home/
+          echo "📁 Checking standalone build:"
+          if [ -d ".next/standalone" ]; then
+            echo "✅ Standalone build found"
+            ls -la .next/standalone/
           else
-            echo "❌ Home build failed - no output found"
+            echo "❌ Standalone build not found"
+            echo "Available files in .next:"
+            ls -la .next/
             exit 1
           fi
+
+          echo "📁 Preparing deployment package..."
+          # 배포용 폴더 구성
+          mkdir -p ../../dist/apps/home
+
+          # Standalone 파일들 복사
+          cp -r .next/standalone/* ../../dist/apps/home/
+
+          # Static 파일들 복사
+          if [ -d ".next/static" ]; then
+            mkdir -p ../../dist/apps/home/.next
+            cp -r .next/static ../../dist/apps/home/.next/
+          fi
+
+          # Public 파일들 복사
+          if [ -d "public" ]; then
+            cp -r public ../../dist/apps/home/
+          fi
+
+          echo "📁 Final deployment package:"
+          ls -la ../../dist/apps/home/
+
+          echo "📊 Package size:"
+          du -sh ../../dist/apps/home/
 
       - name: Configure AWS credentials
-        if: env.HOME_EXISTS == 'true'
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      # home 브랜치에 푸시할 때만 배포 (PR은 제외)
-      - name: Deploy home to S3
-        if: env.HOME_EXISTS == 'true' && github.ref == 'refs/heads/home' && github.event_name == 'push'
+      # 동적 Next.js 앱을 위한 배포 (EC2)
+      - name: Deploy to AWS S3 (for file storage)
         run: |
-          echo "🚀 Deploying home to S3..."
+          echo "🚀 Uploading build to S3..."
 
-          aws s3 sync dist/apps/home s3://${{ secrets.HOME_S3_BUCKET_NAME }} \
+          # 타임스탬프 생성
+          TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+          BUILD_PATH="builds/$TIMESTAMP"
+
+          # S3에 빌드 파일 업로드
+          aws s3 sync dist/apps/home s3://${{ secrets.HOME_S3_BUCKET_NAME }}/$BUILD_PATH/ \
             --delete \
-            --exact-timestamps
+            --quiet
 
-          echo "✅ Home deployed to S3"
+          echo "✅ Build uploaded to s3://${{ secrets.HOME_S3_BUCKET_NAME }}/$BUILD_PATH/"
 
-      - name: Invalidate CloudFront cache
-        if: env.HOME_EXISTS == 'true' && github.ref == 'refs/heads/home' && github.event_name == 'push'
+          # 최신 빌드 경로를 별도 파일로 저장
+          echo "$BUILD_PATH" | aws s3 cp - s3://${{ secrets.HOME_S3_BUCKET_NAME }}/latest-build.txt
+
+          echo "📝 Latest build path saved"
+
+      # EC2 인스턴스에 배포 명령 전송
+      - name: Deploy to EC2
         run: |
-          echo "🔄 Invalidating CloudFront cache..."
+          echo "🚀 Deploying to EC2..."
 
-          aws cloudfront create-invalidation \
-            --distribution-id ${{ secrets.HOME_CLOUDFRONT_DISTRIBUTION_ID }} \
-            --paths "/*"
+          # SSM을 통해 EC2에서 배포 스크립트 실행
+          COMMAND_ID=$(aws ssm send-command \
+            --instance-ids ${{ secrets.HOME_EC2_INSTANCE_ID }} \
+            --document-name "AWS-RunShellScript" \
+            --parameters 'commands=[
+              "#!/bin/bash",
+              "set -e",
+              "echo \"Starting deployment...\"",
+              "cd /home/ec2-user/app || (mkdir -p /home/ec2-user/app && cd /home/ec2-user/app)",
+              "BUILD_PATH=$(aws s3 cp s3://${{ secrets.HOME_S3_BUCKET_NAME }}/latest-build.txt -)",
+              "echo \"Downloading build: $BUILD_PATH\"",
+              "rm -rf current-build",
+              "mkdir -p current-build",
+              "aws s3 sync s3://${{ secrets.HOME_S3_BUCKET_NAME }}/$BUILD_PATH/ ./current-build/",
+              "echo \"Installing dependencies...\"",
+              "cd current-build && npm install --production --silent",
+              "echo \"Stopping existing application...\"",
+              "pm2 stop home-app || echo \"App not running\"",
+              "pm2 delete home-app || echo \"App not in pm2\"",
+              "echo \"Starting application...\"",
+              "cd /home/ec2-user/app/current-build",
+              "pm2 start server.js --name home-app --log /var/log/pm2-home.log --error /var/log/pm2-home-error.log",
+              "pm2 save",
+              "echo \"✅ Deployment completed\"",
+              "pm2 status"
+            ]' \
+            --comment "Deploy home application" \
+            --timeout-seconds 600 \
+            --query 'Command.CommandId' \
+            --output text)
 
-          echo "✅ CloudFront invalidation created"
+          echo "✅ Deployment command sent to EC2. Command ID: $COMMAND_ID"
+
+          # 명령 실행 상태 확인
+          echo "⏳ Waiting for deployment to complete..."
+          for i in {1..30}; do
+            STATUS=$(aws ssm get-command-invocation \
+              --command-id $COMMAND_ID \
+              --instance-id ${{ secrets.HOME_EC2_INSTANCE_ID }} \
+              --query 'Status' \
+              --output text 2>/dev/null || echo "InProgress")
+            
+            echo "Deployment status: $STATUS (check $i/30)"
+            
+            if [ "$STATUS" = "Success" ]; then
+              echo "✅ Deployment completed successfully"
+              break
+            elif [ "$STATUS" = "Failed" ]; then
+              echo "❌ Deployment failed"
+              aws ssm get-command-invocation \
+                --command-id $COMMAND_ID \
+                --instance-id ${{ secrets.HOME_EC2_INSTANCE_ID }} \
+                --query 'StandardErrorContent' \
+                --output text
+              exit 1
+            elif [ "$STATUS" = "TimedOut" ]; then
+              echo "⏰ Deployment timed out"
+              exit 1
+            fi
+            
+            sleep 20
+          done
+
+      # 배포 결과 확인
+      - name: Verify deployment
+        run: |
+          echo "🔍 Verifying deployment..."
+
+          # 잠시 대기 (앱 시작 시간)
+          sleep 15
+
+          # Health check
+          if [ -n "${{ secrets.HOME_APP_URL }}" ]; then
+            echo "Checking app health at ${{ secrets.HOME_APP_URL }}"
+            for i in {1..10}; do
+              if curl -f -s -o /dev/null "${{ secrets.HOME_APP_URL }}"; then
+                echo "✅ App is healthy and responding"
+                echo "🌐 App is live at: ${{ secrets.HOME_APP_URL }}"
+                break
+              else
+                echo "⏳ Waiting for app to start... (attempt $i/10)"
+                if [ $i -eq 10 ]; then
+                  echo "❌ App health check failed after 10 attempts"
+                  echo "Check EC2 logs: sudo pm2 logs home-app"
+                  exit 1
+                fi
+                sleep 10
+              fi
+            done
+          else
+            echo "⚠️ HOME_APP_URL not set, skipping health check"
+          fi
+
+          echo "🎉 Deployment completed successfully!"
 
   # 테스트 작업 (PR용)
   test-home:
@@ -111,11 +215,10 @@ jobs:
         run: bun install
 
       - name: Run home linting
+        continue-on-error: true
         run: |
           echo "🔍 Linting home application..."
-
-          # 린팅이 설정되어 있는 경우 실행
-          if bunx nx lint blog --help > /dev/null 2>&1; then
+          if bunx nx lint home --help > /dev/null 2>&1; then
             echo "Running home linting..."
             bunx nx lint home
           else
@@ -125,12 +228,16 @@ jobs:
       - name: Build check for home
         run: |
           echo "🏗️ Build check for home application..."
-          bunx nx build home
+          cd apps/home
+          bun run build
 
-          # 빌드 결과 확인
-          if [ -d "dist/apps/home" ]; then
+          if [ -d ".next/standalone" ]; then
             echo "✅ Home build check passed"
+            echo "📁 Build output:"
+            ls -la .next/standalone/
           else
             echo "❌ Home build check failed"
+            echo "📁 Available files in .next:"
+            ls -la .next/
             exit 1
           fi

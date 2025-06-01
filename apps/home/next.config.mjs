@@ -1,8 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  eslint: {
-    ignoreDuringBuilds: false,
-    dirs: [],
+  output: 'standalone',
+  trailingSlash: false,
+  experimental: {
+    serverActions: true,
   },
 };
 
