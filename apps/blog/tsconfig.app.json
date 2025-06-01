@@ -4,12 +4,8 @@
     "outDir": "dist",
     "tsBuildInfoFile": "dist/tsconfig.app.tsbuildinfo",
     "jsx": "react-jsx",
-    "lib": ["dom"],
-    "types": [
-      "node",
-      "@nx/react/typings/cssmodule.d.ts",
-      "@nx/react/typings/image.d.ts"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "types": [],
     "rootDir": ".",
     "paths": {
       "@/*": ["./src/*"]
