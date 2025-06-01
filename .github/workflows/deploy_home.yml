@@ -109,37 +109,62 @@ jobs:
             --parameters 'commands=[
               "#!/bin/bash",
               "set -e",
-              "echo \"Starting deployment...\"",
-              "echo \"Current user: $(whoami)\"",
-              "echo \"Current directory: $(pwd)\"",
-              "cd /home/ubuntu/app || (mkdir -p /home/ubuntu/app && cd /home/ubuntu/app)",
+              
+              "# ubuntu 사용자로 전환하여 실행",
+              "sudo -u ubuntu bash << '\''USERSCRIPT'\''",
+              "set -e",
+              "echo \"Starting deployment as ubuntu user...\"",
+              "cd /home/ubuntu/app",
+              
+              "# S3에서 최신 빌드 경로 가져오기",
               "BUILD_PATH=$(aws s3 cp s3://${{ secrets.HOME_S3_BUCKET_NAME }}/latest-build.txt -)",
               "echo \"Downloading build: $BUILD_PATH\"",
-              "rm -rf current-build",
+              
+              "# 기존 빌드 백업 및 새 빌드 다운로드",
+              "rm -rf current-build.bak",
+              "if [ -d \"current-build\" ]; then mv current-build current-build.bak; fi",
               "mkdir -p current-build",
+              
+              "# S3에서 새 빌드 다운로드",
               "aws s3 sync s3://${{ secrets.HOME_S3_BUCKET_NAME }}/$BUILD_PATH/ ./current-build/",
-              "echo \"Setting proper permissions...\"",
-              "sudo chown -R ubuntu:ubuntu /home/ubuntu/app",
-              "chmod -R 755 /home/ubuntu/app",
-              "echo \"Installing dependencies...\"",
-              "cd current-build && npm install --production --silent",
-              "echo \"Checking Node.js and npm versions...\"",
-              "node --version",
-              "npm --version",
-              "echo \"Checking if server.js exists...\"",
-              "ls -la server.js || echo \"server.js not found, checking for alternatives...\"",
-              "ls -la *.js || echo \"No JS files found\"",
-              "echo \"Stopping existing application...\"",
-              "pm2 stop home-app || echo \"App not running\"",
-              "pm2 delete home-app || echo \"App not in pm2\"",
-              "echo \"Starting application...\"",
-              "cd /home/ubuntu/app/current-build",
-              "echo \"Files in current directory:\"",
-              "ls -la",
-              "pm2 start server.js --name home-app --log /var/log/pm2-home.log --error /var/log/pm2-home-error.log || pm2 start npm --name home-app -- start",
+              
+              "# 의존성 설치",
+              "cd current-build",
+              "echo \"Installing production dependencies...\"",
+              "npm install --production --silent",
+              
+              "# 서버 파일 확인",
+              "echo \"Checking server files...\"",
+              "if [ -f \"server.js\" ]; then",
+              "  echo \"✅ server.js found\"",
+              "elif [ -f \"apps/home/server.js\" ]; then",
+              "  echo \"✅ apps/home/server.js found\"",
+              "else",
+              "  echo \"❌ No server.js found. Available JS files:\"",
+              "  find . -name \"*.js\" -type f | head -20",
+              "fi",
+              
+              "# PM2로 앱 재시작",
+              "echo \"Restarting application with PM2...\"",
+              "pm2 stop home-app 2>/dev/null || true",
+              "pm2 delete home-app 2>/dev/null || true",
+              
+              "# 앱 시작",
+              "if [ -f \"server.js\" ]; then",
+              "  PORT=3000 pm2 start server.js --name home-app --update-env",
+              "elif [ -f \"apps/home/server.js\" ]; then",
+              "  PORT=3000 pm2 start apps/home/server.js --name home-app --update-env",
+              "else",
+              "  echo \"Starting with npm start...\"",
+              "  PORT=3000 pm2 start npm --name home-app -- start",
+              "fi",
+              
+              "# PM2 설정 저장",
               "pm2 save",
+              
               "echo \"✅ Deployment completed\"",
-              "pm2 status"
+              "pm2 status",
+              "USERSCRIPT"
             ]' \
             --comment "Deploy home application to Ubuntu" \
             --timeout-seconds 600 \
