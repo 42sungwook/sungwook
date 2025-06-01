@@ -34,31 +34,28 @@ jobs:
           echo "🏗️ Building Next.js application..."
           bun run build
 
-          echo "📁 Checking standalone build:"
-          if [ -d ".next/standalone" ]; then
-            echo "✅ Standalone build found"
-            ls -la .next/standalone/
-          else
-            echo "❌ Standalone build not found"
-            echo "Available files in .next:"
+          echo "📁 Checking build output:"
+          if [ -d ".next" ]; then
+            echo "✅ Build found"
             ls -la .next/
+          else
+            echo "❌ Build not found"
             exit 1
           fi
 
           echo "📁 Preparing deployment package..."
-          mkdir -p ../../dist
-          cp -r .next/standalone ../../dist/home
+          mkdir -p ../../dist/home
 
-          if [ -d "public" ] && [ ! -d "../../dist/home/public" ]; then
-            cp -r public ../../dist/home/
-          fi
+          # Next.js 빌드 결과물 복사
+          cp -r .next ../../dist/home/
+          cp -r public ../../dist/home/ 2>/dev/null || echo "No public folder"
+          cp package.json ../../dist/home/
+          cp next.config.js ../../dist/home/ 2>/dev/null || echo "No next.config.js"
+
+          # node_modules는 서버에서 설치하므로 제외
 
           echo "📁 Final deployment package:"
           ls -la ../../dist/home/
-
-          # .next 폴더 확인
-          echo "📁 Checking .next folder:"
-          find ../../dist/home -name ".next" -type d -exec ls -la {} \;
 
           echo "📊 Package size:"
           du -sh ../../dist/home/
@@ -78,7 +75,7 @@ jobs:
           TIMESTAMP=$(date +%Y%m%d-%H%M%S)
           BUILD_PATH="builds/$TIMESTAMP"
 
-          # S3에 빌드 파일 업로드 - 전체 구조 그대로
+          # S3에 빌드 파일 업로드
           aws s3 sync dist/home s3://${{ secrets.HOME_S3_BUCKET_NAME }}/$BUILD_PATH/ \
             --delete \
             --quiet
@@ -119,7 +116,7 @@ jobs:
               "  mv current backup",
               "fi",
               
-              "# 새 빌드 다운로드 - 전체 구조 그대로",
+              "# 새 빌드 다운로드",
               "mkdir -p current",
               "aws s3 sync s3://${{ secrets.HOME_S3_BUCKET_NAME }}/$BUILD_PATH/ ./current/",
               
@@ -127,21 +124,9 @@ jobs:
               "echo \"Current folder structure:\"",
               "ls -la current/",
               
-              "# 작업 디렉토리 찾기",
-              "if [ -f \"current/server.js\" ]; then",
-              "  WORK_DIR=\"/home/ubuntu/app/current\"",
-              "elif [ -f \"current/apps/home/server.js\" ]; then",
-              "  WORK_DIR=\"/home/ubuntu/app/current/apps/home\"",
-              "else",
-              "  echo \"❌ server.js not found\"",
-              "  find current -name \"server.js\" -type f",
-              "  exit 1",
-              "fi",
+              "cd current",
               
-              "echo \"Working directory: $WORK_DIR\"",
-              "cd $WORK_DIR",
-              
-              "# 의존성 설치",
+              "# 의존성 설치 (프로덕션용)",
               "echo \"Installing dependencies...\"",
               "npm install --production",
               
@@ -150,8 +135,8 @@ jobs:
               "pm2 stop home-app 2>/dev/null || true",
               "pm2 delete home-app 2>/dev/null || true",
               
-              "# 환경변수와 함께 시작",
-              "PORT=3000 NODE_ENV=production pm2 start server.js --name home-app --cwd $WORK_DIR",
+              "# Next.js 프로덕션 모드로 시작",
+              "PORT=3000 NODE_ENV=production pm2 start npm --name home-app -- start",
               
               "# PM2 설정 저장",
               "pm2 save",
@@ -264,11 +249,10 @@ jobs:
           cd apps/home
           bun run build
 
-          if [ -d ".next/standalone" ]; then
+          if [ -d ".next" ]; then
             echo "✅ Build check passed"
-            ls -la .next/standalone/
+            ls -la .next/
           else
             echo "❌ Build check failed"
-            ls -la .next/
             exit 1
           fi
