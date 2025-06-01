@@ -1,7 +1,7 @@
 {
-  "name": "main",
+  "name": "home",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "apps/main",
+  "sourceRoot": "apps/home",
   "projectType": "application",
   "targets": {
     "build": {
@@ -9,7 +9,7 @@
       "outputs": ["{options.outputPath}"],
       "defaultConfiguration": "production",
       "options": {
-        "outputPath": "dist/apps/main"
+        "outputPath": "dist/apps/home"
       },
       "configurations": {
         "development": {},
@@ -20,16 +20,16 @@
       "executor": "@nx/next:server",
       "defaultConfiguration": "development",
       "options": {
-        "buildTarget": "main:build",
+        "buildTarget": "home:build",
         "dev": true
       },
       "configurations": {
         "development": {
-          "buildTarget": "main:build:development",
+          "buildTarget": "home:build:development",
           "dev": true
         },
         "production": {
-          "buildTarget": "main:build:production",
+          "buildTarget": "home:build:production",
           "dev": false
         }
       }
