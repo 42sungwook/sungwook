@@ -1,5 +1,5 @@
 export default function ProjectLayout({
-  children
+  children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <div className="section bg-background-light dark:bg-background-dark">
@@ -9,5 +9,5 @@ export default function ProjectLayout({
         </div>
       </div>
     </div>
-  )
+  );
 }

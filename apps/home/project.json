@@ -33,6 +33,14 @@
           "dev": false
         }
       }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/home/**/*.{ts,tsx,js,jsx}"],
+        "fix": true
+      }
     }
   },
   "tags": []

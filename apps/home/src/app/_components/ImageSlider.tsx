@@ -1,29 +1,29 @@
-'use client'
+'use client';
 
-import Image from 'next/image'
-import { useEffect, useRef, useState } from 'react'
+import Image from 'next/image';
+import { useEffect, useRef, useState } from 'react';
 
 function ImageSlider({ images }: { images: string[] }) {
-  const [index, setIndex] = useState(1)
-  const timeoutRef = useRef<NodeJS.Timeout>()
-  const total = images.length
+  const [index, setIndex] = useState(1);
+  const timeoutRef = useRef<NodeJS.Timeout>(null);
+  const total = images.length;
 
   const resetTimeout = () => {
     if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current)
+      clearTimeout(timeoutRef.current);
     }
-  }
+  };
 
   useEffect(() => {
-    resetTimeout()
+    resetTimeout();
     timeoutRef.current = setTimeout(() => {
-      setIndex((prevIndex) => (prevIndex === total ? 1 : prevIndex + 1))
-    }, 5000)
+      setIndex((prevIndex) => (prevIndex === total ? 1 : prevIndex + 1));
+    }, 5000);
 
     return () => {
-      resetTimeout()
-    }
-  }, [index, total])
+      resetTimeout();
+    };
+  }, [index, total]);
 
   return (
     <div className="bg-black p-4 pb-12 rounded-md relative w-full overflow-hidden">
@@ -32,10 +32,7 @@ function ImageSlider({ images }: { images: string[] }) {
         style={{ transform: `translateX(-${(index - 1) * 100}%)` }}
       >
         {images.map((image, i) => (
-          <div
-            key={i}
-            className="flex-shrink-0 w-full px-2"
-          >
+          <div key={i} className="flex-shrink-0 w-full px-2">
             <div className="relative w-full aspect-[16/9] rounded-md overflow-hidden bg-neutral-900">
               <Image
                 src={image}
@@ -67,7 +64,7 @@ function ImageSlider({ images }: { images: string[] }) {
           ))}
       </nav>
     </div>
-  )
+  );
 }
 
-export default ImageSlider
+export default ImageSlider;

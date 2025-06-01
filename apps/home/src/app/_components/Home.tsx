@@ -1,6 +1,6 @@
-import { Button } from '@/ui'
-import Image from 'next/image'
-import Link from 'next/link'
+import { Button } from '@/ui';
+import Image from 'next/image';
+import Link from 'next/link';
 
 function Home() {
   return (
@@ -11,24 +11,14 @@ function Home() {
           target="_blank"
           className="p-4 border-2 border-white"
         >
-          <Image
-            src="/github-logo.svg"
-            width={30}
-            height={30}
-            alt="github"
-          />
+          <Image src="/github-logo.svg" width={30} height={30} alt="github" />
         </Link>
         <Link
           href="https://sungwook.tistory.com"
           target="_blank"
           className="p-4 border-2 border-white"
         >
-          <Image
-            src="/tistory.svg"
-            width={30}
-            height={30}
-            alt="blog"
-          />
+          <Image src="/tistory.svg" width={30} height={30} alt="blog" />
         </Link>
       </div>
       <div className="flex flex-col items-center px-8">
@@ -47,10 +37,7 @@ function Home() {
           <Button link="./#PROJECTS">프로젝트 보기</Button>
         </div>
       </div>
-      <Link
-        href="./#ABOUT"
-        className="absolute bottom-[10%] inline-block"
-      >
+      <Link href="./#ABOUT" className="absolute bottom-[10%] inline-block">
         <Image
           className="animate-bounce-top"
           src="/arrow_down.svg"
@@ -60,7 +47,7 @@ function Home() {
         />
       </Link>
     </div>
-  )
+  );
 }
 
-export default Home
+export default Home;

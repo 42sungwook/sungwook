@@ -1,6 +1,6 @@
-import ProjectLayout from '@/app/(project)/ProjectLayout'
-import ImageSlider from '@/app/_components/ImageSlider'
-import { H1, H2 } from '@/ui'
+import ProjectLayout from '@/app/(project)/ProjectLayout';
+import ImageSlider from '@/app/_components/ImageSlider';
+import { H1, H2 } from '@/ui';
 
 export default function Oasisw() {
   return (
@@ -23,7 +23,7 @@ export default function Oasisw() {
           '/oasisw/oasis_7.png',
           '/oasisw/oasis_8.png',
           '/oasisw/oasis_9.png',
-          '/oasisw/oasis_10.png'
+          '/oasisw/oasis_10.png',
         ]}
       />
       <div className="w-full mt-16 grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16">
@@ -67,5 +67,5 @@ export default function Oasisw() {
         </p>
       </div>
     </ProjectLayout>
-  )
+  );
 }

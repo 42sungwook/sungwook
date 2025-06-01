@@ -1,12 +1,12 @@
-import { Button, H3 } from '@/ui'
-import Image from 'next/image'
+import { Button, H3 } from '@/ui';
+import Image from 'next/image';
 import type {
   Project,
   ProjectImageProps,
   ProjectDescriptionProps,
-  ProjectProps
-} from '@/types/project'
-import { PROJECTS } from '@/constants/project'
+  ProjectProps,
+} from '@/types/project';
+import { PROJECTS } from '@/constants/project';
 
 const ProjectImage = ({ src, alt }: ProjectImageProps) => {
   return (
@@ -18,18 +18,18 @@ const ProjectImage = ({ src, alt }: ProjectImageProps) => {
         sizes="(max-width: 768px) 90vw, 50vw"
         priority
         style={{
-          objectFit: 'cover'
+          objectFit: 'cover',
         }}
       />
     </div>
-  )
-}
+  );
+};
 
 const ProjectDescription = ({
   title,
   description,
   link,
-  className = ''
+  className = '',
 }: ProjectDescriptionProps) => {
   return (
     <div className={`w-full px-4 md:px-12 pt-8 ${className}`}>
@@ -37,17 +37,14 @@ const ProjectDescription = ({
       <p className="mb-8">{description}</p>
       <Button link={link}>자세히 보기</Button>
     </div>
-  )
-}
+  );
+};
 
 const Project = ({ project, isLast }: ProjectProps) => {
   return (
     <>
       <div className="w-full max-w-[800px] lg:max-w-none mx-auto">
-        <ProjectImage
-          src={project.imageSrc}
-          alt={project.imageAlt}
-        />
+        <ProjectImage src={project.imageSrc} alt={project.imageAlt} />
       </div>
       <ProjectDescription
         title={project.title}
@@ -56,8 +53,8 @@ const Project = ({ project, isLast }: ProjectProps) => {
         className={isLast ? '' : 'mb-24 lg:mb-0'}
       />
     </>
-  )
-}
+  );
+};
 
 function ProjectList() {
   return (
@@ -70,7 +67,7 @@ function ProjectList() {
         />
       ))}
     </div>
-  )
+  );
 }
 
-export default ProjectList
+export default ProjectList;

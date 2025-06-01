@@ -1,7 +1,7 @@
-import ProjectLayout from '@/app/(project)/ProjectLayout'
-import ImageSlider from '@/app/_components/ImageSlider'
-import { H1, H2 } from '@/ui'
-import Link from 'next/link'
+import ProjectLayout from '@/app/(project)/ProjectLayout';
+import ImageSlider from '@/app/_components/ImageSlider';
+import { H1, H2 } from '@/ui';
+import Link from 'next/link';
 
 export default function FtGG() {
   return (
@@ -22,7 +22,7 @@ export default function FtGG() {
           '/42gg/42gg_9.png',
           '/42gg/42gg_10.png',
           '/42gg/42gg_11.png',
-          '/42gg/42gg_12.png'
+          '/42gg/42gg_12.png',
         ]}
       />
       <div className="w-full mt-16 grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16">
@@ -69,5 +69,5 @@ export default function FtGG() {
         <p>- 디자인 변경에 따른 CSS 수정</p>
       </div>
     </ProjectLayout>
-  )
+  );
 }

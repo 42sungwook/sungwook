@@ -1,7 +1,7 @@
-import ProjectLayout from '@/app/(project)/ProjectLayout'
-import ImageSlider from '@/app/_components/ImageSlider'
-import { H1, H2 } from '@/ui'
-import Link from 'next/link'
+import ProjectLayout from '@/app/(project)/ProjectLayout';
+import ImageSlider from '@/app/_components/ImageSlider';
+import { H1, H2 } from '@/ui';
+import Link from 'next/link';
 
 export default function FtStat() {
   return (
@@ -27,7 +27,7 @@ export default function FtStat() {
           '/42stat/stat_13.png',
           '/42stat/stat_14.png',
           '/42stat/stat_15.png',
-          '/42stat/stat_16.png'
+          '/42stat/stat_16.png',
         ]}
       />
       <div className="w-full mt-16 grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16">
@@ -81,5 +81,5 @@ export default function FtStat() {
         <p>&emsp;- 랭킹 차트 추가</p>
       </div>
     </ProjectLayout>
-  )
+  );
 }
