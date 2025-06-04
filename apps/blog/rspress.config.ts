@@ -26,6 +26,35 @@ export default defineConfig({
     },
   },
   themeConfig: {
+    sidebar: {
+      '/posts/': [
+        {
+          text: '프론트엔드 인턴으로 살아남기',
+          items: [
+            {
+              text: '메타 데이터 관리하기',
+              link: '/posts/intern/1',
+            },
+            {
+              text: '피드백 및 실수 모음',
+              link: '/posts/intern/2',
+            },
+            {
+              text: 'Rspack 마이그레이션',
+              link: '/posts/intern/3',
+            },
+            {
+              text: 'Portal',
+              link: '/posts/intern/4',
+            },
+            {
+              text: 'Portal #2',
+              link: '/posts/intern/5',
+            },
+          ],
+        },
+      ],
+    },
     socialLinks: [
       // 소셜 링크 설정
     ],
