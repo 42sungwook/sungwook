@@ -36,9 +36,6 @@ const Navigation: React.FC = () => {
             <button onClick={() => scrollToSection('about')}>About</button>
           </li>
           <li>
-            <button onClick={() => scrollToSection('skills')}>Skills</button>
-          </li>
-          <li>
             <button onClick={() => scrollToSection('projects')}>
               Projects
             </button>
