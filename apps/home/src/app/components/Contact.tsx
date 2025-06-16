@@ -1,19 +1,19 @@
 import React from 'react';
-import './Contact.css';
+import styles from './Contact.module.css';
 
 const Contact: React.FC = () => {
   return (
-    <section id="contact" className="contact">
+    <section id="contact" className={styles.contact}>
       <div className="container">
-        <h2 className="section-title">Contact Me</h2>
-        <div className="contact-content">
-          <div className="contact-intro">
+        <h2 className={`section-title ${styles.sectionTitle}`}>Contact Me</h2>
+        <div className={styles.contactContent}>
+          <div className={styles.contactIntro}>
             <p>커피챗은 언제든 환영입니다!</p>
           </div>
 
-          <div className="contact-cards">
-            <div className="contact-card">
-              <div className="contact-icon">
+          <div className={styles.contactCards}>
+            <div className={styles.contactCard}>
+              <div className={styles.contactIcon}>
                 <svg
                   width="24"
                   height="24"
@@ -39,13 +39,16 @@ const Contact: React.FC = () => {
               </div>
               <h4>Email</h4>
               <p>silenc3@naver.com</p>
-              <a href="mailto:silenc3@naver.com" className="contact-action">
+              <a
+                href="mailto:silenc3@naver.com"
+                className={styles.contactAction}
+              >
                 Send Email
               </a>
             </div>
 
-            <div className="contact-card">
-              <div className="contact-icon">
+            <div className={styles.contactCard}>
+              <div className={styles.contactIcon}>
                 <svg
                   width="24"
                   height="24"
@@ -64,13 +67,13 @@ const Contact: React.FC = () => {
               </div>
               <h4>Phone</h4>
               <p>+82 10-7713-5078</p>
-              <a href="tel:+821077135078" className="contact-action">
+              <a href="tel:+821077135078" className={styles.contactAction}>
                 Call Now
               </a>
             </div>
 
-            <div className="contact-card">
-              <div className="contact-icon">
+            <div className={styles.contactCard}>
+              <div className={styles.contactIcon}>
                 <svg
                   width="24"
                   height="24"
@@ -106,14 +109,14 @@ const Contact: React.FC = () => {
                   />
                 </svg>
               </div>
-              <h4>Others</h4>
+              <h4>Professional</h4>
               <p>GitHub & LinkedIn</p>
-              <div className="other-links">
+              <div className={styles.professionalLinks}>
                 <a
                   href="https://github.com/42sungwook"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="other-link github-link"
+                  className={`${styles.proLink} ${styles.githubLink}`}
                 >
                   <svg
                     width="20"
@@ -130,7 +133,7 @@ const Contact: React.FC = () => {
                   href="https://www.linkedin.com/in/%EC%84%B1%EC%9A%B1-%EA%B9%80-b00602296/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="other-link linkedin-link"
+                  className={`${styles.proLink} ${styles.linkedinLink}`}
                 >
                   <svg
                     width="20"

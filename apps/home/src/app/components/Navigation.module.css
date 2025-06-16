@@ -16,7 +16,7 @@
   box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
 }
 
-.nav-container {
+.navContainer {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 20px;
@@ -26,7 +26,7 @@
   height: 70px;
 }
 
-.nav-logo span {
+.navLogo span {
   font-size: 1.5rem;
   font-weight: 700;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -35,7 +35,7 @@
   background-clip: text;
 }
 
-.nav-menu {
+.navMenu {
   display: flex;
   list-style: none;
   gap: 2rem;
@@ -43,7 +43,7 @@
   padding: 0;
 }
 
-.nav-menu li button {
+.navMenu li button {
   background: none;
   border: none;
   color: #333;
@@ -56,12 +56,12 @@
   position: relative;
 }
 
-.nav-menu li button:hover {
+.navMenu li button:hover {
   color: #667eea;
   background: rgba(102, 126, 234, 0.1);
 }
 
-.nav-menu li button::after {
+.navMenu li button::after {
   content: '';
   position: absolute;
   bottom: -2px;
@@ -73,20 +73,20 @@
   transition: width 0.3s ease;
 }
 
-.nav-menu li button:hover::after {
+.navMenu li button:hover::after {
   width: 80%;
 }
 
 @media (max-width: 768px) {
-  .nav-container {
+  .navContainer {
     padding: 0 15px;
   }
 
-  .nav-menu {
+  .navMenu {
     gap: 1rem;
   }
 
-  .nav-menu li button {
+  .navMenu li button {
     font-size: 0.9rem;
     padding: 6px 12px;
   }

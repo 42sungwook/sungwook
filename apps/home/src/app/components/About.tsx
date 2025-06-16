@@ -1,13 +1,13 @@
 import React from 'react';
-import './About.css';
+import styles from './About.module.css';
 
 const About: React.FC = () => {
   return (
-    <section id="about" className="about">
+    <section id="about" className={styles.about}>
       <div className="container">
         <h2 className="section-title">About Me</h2>
-        <div className="about-content">
-          <div className="about-text">
+        <div className={styles.aboutContent}>
+          <div className={styles.aboutText}>
             <p>
               안녕하세요 저는 프론트엔드 개발자로 성장하고 있는 김성욱입니다.
               주로 React와 Next.js를 사용해서 프로젝트를 진행해왔으며 진행한
@@ -22,79 +22,79 @@ const About: React.FC = () => {
             </p>
           </div>
 
-          <div className="about-details">
-            <div className="detail-section">
-              <h3 className="detail-title">🎓 교육</h3>
-              <div className="detail-items">
-                <div className="detail-item">
-                  <div className="detail-period">2022.11 - 2024.08</div>
-                  <div className="detail-content">
+          <div className={styles.aboutDetails}>
+            <div className={styles.detailSection}>
+              <h3 className={styles.detailTitle}>🎓 교육</h3>
+              <div className={styles.detailItems}>
+                <div className={styles.detailItem}>
+                  <div className={styles.detailPeriod}>2022.11 - 2024.08</div>
+                  <div className={styles.detailContent}>
                     <strong>42서울</strong>
-                    <span className="detail-status">[공통과정 수료]</span>
+                    <span className={styles.detailStatus}>[공통과정 수료]</span>
                   </div>
                 </div>
-                <div className="detail-item">
-                  <div className="detail-period">2015.03 - 2022.02</div>
-                  <div className="detail-content">
+                <div className={styles.detailItem}>
+                  <div className={styles.detailPeriod}>2015.03 - 2022.02</div>
+                  <div className={styles.detailContent}>
                     <strong>한양대학교 화학공학과</strong>
-                    <span className="detail-status">[졸업]</span>
+                    <span className={styles.detailStatus}>[졸업]</span>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="detail-section">
-              <h3 className="detail-title">💼 경력</h3>
-              <div className="detail-items">
-                <div className="detail-item">
-                  <div className="detail-period">2024.11 - 2025.05</div>
-                  <div className="detail-content">
+            <div className={styles.detailSection}>
+              <h3 className={styles.detailTitle}>💼 경력</h3>
+              <div className={styles.detailItems}>
+                <div className={styles.detailItem}>
+                  <div className={styles.detailPeriod}>2024.11 - 2025.05</div>
+                  <div className={styles.detailContent}>
                     <strong>(주)엘리스그룹</strong>
                   </div>
                 </div>
-                <div className="detail-item">
-                  <div className="detail-period">2024.05 - 2024.08</div>
-                  <div className="detail-content">
+                <div className={styles.detailItem}>
+                  <div className={styles.detailPeriod}>2024.05 - 2024.08</div>
+                  <div className={styles.detailContent}>
                     <strong>(주)핏펀즈</strong>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="detail-section">
-              <h3 className="detail-title">🏆 수상 및 자격증</h3>
-              <div className="detail-items">
-                <div className="detail-item">
-                  <div className="detail-period">2024.09</div>
-                  <div className="detail-content">
+            <div className={styles.detailSection}>
+              <h3 className={styles.detailTitle}>🏆 수상 및 자격증</h3>
+              <div className={styles.detailItems}>
+                <div className={styles.detailItem}>
+                  <div className={styles.detailPeriod}>2024.09</div>
+                  <div className={styles.detailContent}>
                     <strong>PCCP Javascript Lv3.</strong>
                   </div>
                 </div>
-                <div className="detail-item">
-                  <div className="detail-period">2024.08</div>
-                  <div className="detail-content">
+                <div className={styles.detailItem}>
+                  <div className={styles.detailPeriod}>2024.08</div>
+                  <div className={styles.detailContent}>
                     <strong>Opic 영어 IH 등급</strong>
                   </div>
                 </div>
-                <div className="detail-item">
-                  <div className="detail-period">2023.10</div>
-                  <div className="detail-content">
+                <div className={styles.detailItem}>
+                  <div className={styles.detailPeriod}>2023.10</div>
+                  <div className={styles.detailContent}>
                     <strong>
                       42서울 경진대회 대상(과학기술정보통신부 장관상)
                     </strong>
                   </div>
-                  <div className="detail-description">
+                  <div className={styles.detailDescription}>
                     활동 내용: 42STAT 프로젝트
                   </div>
                 </div>
-                <div className="detail-item">
-                  <div className="detail-period">2014.02</div>
-                  <div className="detail-content">
+                <div className={styles.detailItem}>
+                  <div className={styles.detailPeriod}>2014.02</div>
+                  <div className={styles.detailContent}>
                     <strong>
                       2013 STEAM R&E 페스티벌 최우수상(교육부 장관상)
                     </strong>
                   </div>
-                  <div className="detail-description">
+                  <div className={styles.detailDescription}>
                     활동 내용: 파력 발전기 프로토타입 개발
                   </div>
                 </div>
@@ -102,22 +102,22 @@ const About: React.FC = () => {
             </div>
           </div>
 
-          <div className="about-highlights">
-            <div className="highlight-item">
+          <div className={styles.aboutHighlights}>
+            <div className={styles.highlightItem}>
               <h3>🎯 자기 주도적</h3>
               <p>
                 스스로 학습 목표를 설정하고 체계적으로 실행해나갑니다. 복잡한
                 문제일수록 작은 단위로 나누어 차근차근 해결하는 것을 선호합니다.
               </p>
             </div>
-            <div className="highlight-item">
+            <div className={styles.highlightItem}>
               <h3>🤝 협업 중시</h3>
               <p>
                 동료 학습으로 개발을 시작한 만큼 소통과 협업을 중시하며, 함께할
                 때 더 큰 시너지를 만들어낸다고 믿습니다.
               </p>
             </div>
-            <div className="highlight-item">
+            <div className={styles.highlightItem}>
               <h3>📈 트렌드 학습</h3>
               <p>
                 최신 기술 동향을 꾸준히 탐구하며, 새로운 기술을 프로젝트에

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import './Navigation.css';
+import styles from './Navigation.module.css';
 
 const Navigation: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -21,12 +21,14 @@ const Navigation: React.FC = () => {
   };
 
   return (
-    <nav className={`navigation ${isScrolled ? 'scrolled' : ''}`}>
-      <div className="nav-container">
-        <div className="nav-logo">
+    <nav
+      className={`${styles.navigation} ${isScrolled ? styles.scrolled : ''}`}
+    >
+      <div className={styles.navContainer}>
+        <div className={styles.navLogo}>
           <span>sungwook</span>
         </div>
-        <ul className="nav-menu">
+        <ul className={styles.navMenu}>
           <li>
             <button onClick={() => scrollToSection('hero')}>Home</button>
           </li>
