@@ -3,8 +3,9 @@ const { NxReactRspackPlugin } = require('@nx/rspack/react-plugin');
 const { join } = require('path');
 
 module.exports = {
+  entry: join(__dirname, 'src/main.tsx'),
   output: {
-    path: join(__dirname, 'dist'),
+    path: join(__dirname, '../../dist/apps/home'),
   },
   devServer: {
     port: 4200,
