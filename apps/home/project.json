@@ -12,7 +12,8 @@
         "target": "web",
         "outputPath": "dist/apps/home",
         "main": "./src/main.tsx",
-        "tsConfig": "./tsconfig.app.json"
+        "tsConfig": "./tsconfig.app.json",
+        "rspackConfig": "apps/home/rspack.config.js"
       },
       "configurations": {
         "development": {
