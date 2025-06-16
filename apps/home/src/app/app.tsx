@@ -1,12 +1,14 @@
 import { Routes, Route } from 'react-router-dom';
-import './app.module.css';
+import './app.module.scss';
 import Hero from './components/Hero';
 import About from './components/About';
 import Projects from './components/Projects';
 import Contact from './components/Contact';
 import Navigation from './components/Navigation';
 import Footer from './components/Footer';
-import FtStat from './pages/FtStat';
+import Project42STAT from './pages/Project42STAT';
+import ProjectOasis from './pages/ProjectOasis';
+import Project42GG from './pages/Project42GG';
 
 function HomePage() {
   return (
@@ -25,7 +27,9 @@ export function App() {
   return (
     <Routes>
       <Route path="/" element={<HomePage />} />
-      <Route path="/projects/42stat" element={<FtStat />} />
+      <Route path="/projects/oasis" element={<ProjectOasis />} />
+      <Route path="/projects/42stat" element={<Project42STAT />} />
+      <Route path="/projects/42gg" element={<Project42GG />} />
     </Routes>
   );
 }

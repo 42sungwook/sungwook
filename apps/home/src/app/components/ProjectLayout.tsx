@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import styles from './ProjectLayout.module.css';
+import styles from './ProjectLayout.module.scss';
 
 interface ProjectLayoutProps {
   children: React.ReactNode;

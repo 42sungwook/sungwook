@@ -1,5 +1,8 @@
 {
   "name": "@sungwook/home",
   "version": "0.0.1",
-  "private": true
+  "private": true,
+  "dependencies": {
+    "sass": "^1.89.2"
+  }
 }

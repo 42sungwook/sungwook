@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import styles from './Navigation.module.css';
+import styles from './Navigation.module.scss';
 
 const Navigation: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import styles from './ImageSlider.module.css';
+import styles from './ImageSlider.module.scss';
 
 interface ImageSliderProps {
   images: readonly string[];

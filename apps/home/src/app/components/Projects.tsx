@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import styles from './Projects.module.css';
+import styles from './Projects.module.scss';
 
 const projects = Object.freeze([
   {
@@ -21,7 +21,7 @@ const projects = Object.freeze([
   {
     title: '42STAT',
     description:
-      '42서울에서 진행한 프로젝트로, 42서울 교육생들의 통계를 보여주는 반응형 대시보드 웹서비스입니다. React와 GraphQL을 사용했으며 42서울 교육생 90% 이상이 사용하는 서비스로 DAU 100명 이상을 기록하고 있습니다.',
+      '42서울에서 진행한 프로젝트로, 42서울 교육생들의 통계를 보여주는 반응형 대시보드 웹서비스입니다. React와 GraphQL을 사용했으며 42서울 교육생 90% 이상이 사용하는 서비스로 2024년 2월 기준 DAU 100명 이상을 기록하고 있습니다.',
     technologies: [
       'React',
       'GraphQL(Apollo Client)',

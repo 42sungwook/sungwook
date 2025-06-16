@@ -1,5 +1,5 @@
-import React from 'react';
-import styles from './Hero.module.css';
+import React, { useState, useEffect } from 'react';
+import styles from './Hero.module.scss';
 import { useTypingAnimation } from '../hooks/useTypingAnimation';
 
 const Hero: React.FC = () => {
