@@ -15,7 +15,7 @@ const projects = Object.freeze([
       'Apex Charts',
       'Zustand',
     ],
-    image: '/oasis.png',
+    image: '/assets/oasis.png',
     detailPage: '/projects/oasis',
   },
   {
@@ -29,7 +29,7 @@ const projects = Object.freeze([
       'Apex Charts',
       'Jotai',
     ],
-    image: '/42stat.png',
+    image: '/assets/42stat.png',
     github: 'https://github.com/42Statistics/42Stat-Frontend',
     detailPage: '/projects/42stat',
   },
@@ -38,7 +38,7 @@ const projects = Object.freeze([
     description:
       '42서울에서 진행한 프로젝트로, 42서울 교육생들을 위한 탁구 매칭 및 랭킹 웹 서비스입니다. Next.JS의 page 기반 라우팅을 사용했으며 관리자 페이지와 유저 페이지를 구분하여 개발했습니다.',
     technologies: ['Next.js', 'Recoil', 'SCSS', 'MUI', 'Story Book', 'Cypress'],
-    image: '/42gg.png',
+    image: '/assets/42gg.png',
     github: 'https://github.com/42organization/42gg.client',
     detailPage: '/projects/42gg',
   },

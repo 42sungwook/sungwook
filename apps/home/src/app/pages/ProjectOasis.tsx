@@ -5,7 +5,7 @@ import styles from './project.module.scss';
 
 const projectImages = Array.from(
   { length: 10 },
-  (_, i) => `/oasis/oasis_${i + 1}.png`
+  (_, i) => `/assets/oasis/oasis_${i + 1}.png`
 );
 
 const ProjectOasis: React.FC = () => {

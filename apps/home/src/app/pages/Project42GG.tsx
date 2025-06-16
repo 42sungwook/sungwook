@@ -5,7 +5,7 @@ import styles from './project.module.scss';
 
 const projectImages = Array.from(
   { length: 12 },
-  (_, i) => `/42gg/42gg_${i + 1}.png`
+  (_, i) => `/assets/42gg/42gg_${i + 1}.png`
 );
 
 const Project42GG: React.FC = () => {
