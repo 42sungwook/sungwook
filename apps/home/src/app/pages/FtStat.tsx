@@ -22,7 +22,6 @@ const FtStat: React.FC = () => {
     <ProjectLayout>
       <div className={styles.projectTitleContainer}>
         <h1 className={styles.projectTitle}>42STAT</h1>
-        <p className={styles.projectVersion}>v.0.4.4</p>
       </div>
 
       <ImageSlider images={projectImages} />

@@ -10,7 +10,7 @@
   margin: 0 auto;
   border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  box-shadow: 6px 6px 12px rgba(0, 0, 0, 0.3);
 }
 
 .sliderContent {
@@ -45,6 +45,13 @@
   align-items: center;
   justify-content: center;
   backdrop-filter: blur(10px);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.imageSlider:hover .sliderButton {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .sliderButton:hover {
@@ -72,6 +79,12 @@
   padding: 8px 16px;
   border-radius: 20px;
   backdrop-filter: blur(10px);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.imageSlider:hover .sliderDots {
+  opacity: 1;
 }
 
 .dot {
@@ -99,6 +112,42 @@
   color: #666;
   font-size: 0.9rem;
   font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 2rem;
+}
+
+.autoSlideIndicator {
+  color: #667eea;
+  font-size: 0.8rem;
+  background: rgba(102, 126, 234, 0.1);
+  padding: 0.25rem 0.5rem;
+  border-radius: 12px;
+  border: 1px solid rgba(102, 126, 234, 0.2);
+  transition: opacity 0.3s ease;
+  white-space: nowrap;
+}
+
+.autoSlideIndicator.visible {
+  opacity: 1;
+  animation: pulse 2s infinite;
+}
+
+.autoSlideIndicator.hidden {
+  opacity: 0;
+  animation: none;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
 }
 
 @media (max-width: 768px) {
@@ -129,9 +178,23 @@
   .sliderDots {
     padding: 6px 12px;
   }
+
+  .sliderCounter {
+    flex-direction: column;
+    gap: 0.25rem;
+    min-height: 3rem;
+  }
+
+  .autoSlideIndicator {
+    font-size: 0.75rem;
+  }
 }
 
 @media (max-width: 480px) {
+  .sliderDots {
+    display: none;
+  }
+
   .sliderContainer {
     margin: 0 0.5rem;
   }

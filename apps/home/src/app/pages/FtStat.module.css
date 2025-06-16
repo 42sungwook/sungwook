@@ -90,11 +90,6 @@
   box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
 }
 
-.githubLink::before {
-  content: '🔗';
-  font-size: 1.1rem;
-}
-
 .projectInfoGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
