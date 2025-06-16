@@ -1,0 +1,140 @@
+# .github/workflows/deploy-home.yml
+name: Deploy Home to AWS
+
+on:
+  push:
+    branches: [home]
+  pull_request:
+    branches: [home]
+
+env:
+  NODE_VERSION: '18'
+  BUN_VERSION: 'latest'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
+          fetch-depth: 1
+          token: ${{ secrets.ACCESS_TOKEN }}
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: ${{ env.BUN_VERSION }}
+
+      - name: Install dependencies
+        run: bun install
+
+      # home 앱이 존재하는지 확인
+      - name: Check if home app exists
+        run: |
+          if bunx nx show project home > /dev/null 2>&1; then
+            echo "✅ Home app found"
+            echo "HOME_EXISTS=true" >> $GITHUB_ENV
+          else
+            echo "❌ Home app not found"
+            echo "Available apps:"
+            bunx nx show projects
+            echo "HOME_EXISTS=false" >> $GITHUB_ENV
+            exit 1
+          fi
+
+      # home 앱만 빌드
+      - name: Build home application
+        if: env.HOME_EXISTS == 'true'
+        run: |
+          echo "🏗️ Building home application..."
+          bunx nx build home
+
+          # 빌드 결과 확인
+          echo "📁 Build output:"
+          ls -la dist/apps/home/ || echo "Build output not found"
+
+          # 최종 빌드 결과 확인
+          if [ -d "dist/apps/home" ] && [ "$(ls -A dist/apps/home)" ]; then
+            echo "✅ Home build successful"
+            echo "📄 Build contents:"
+            ls -la dist/apps/home/
+          else
+            echo "❌ Home build failed - no output found"
+            exit 1
+          fi
+
+      - name: Configure AWS credentials
+        if: env.HOME_EXISTS == 'true'
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      # home 브랜치에 푸시할 때만 배포 (PR은 제외)
+      - name: Deploy home to S3
+        if: env.HOME_EXISTS == 'true' && github.ref == 'refs/heads/home' && github.event_name == 'push'
+        run: |
+          echo "🚀 Deploying home to S3..."
+
+          aws s3 sync dist/apps/home s3://${{ secrets.HOME_S3_BUCKET_NAME }} \
+            --delete \
+            --exact-timestamps
+
+          echo "✅ Home deployed to S3"
+
+      - name: Invalidate CloudFront cache
+        if: env.HOME_EXISTS == 'true' && github.ref == 'refs/heads/home' && github.event_name == 'push'
+        run: |
+          echo "🔄 Invalidating CloudFront cache..."
+
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ secrets.HOME_CLOUDFRONT_DISTRIBUTION_ID }} \
+            --paths "/*"
+
+          echo "✅ CloudFront invalidation created"
+
+  # 테스트 작업 (PR용)
+  test-home:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: ${{ env.BUN_VERSION }}
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Run home linting
+        run: |
+          echo "🔍 Linting home application..."
+
+          # 린팅이 설정되어 있는 경우 실행
+          if bunx nx lint home --help > /dev/null 2>&1; then
+            echo "Running home linting..."
+            bunx nx lint home
+          else
+            echo "ℹ️ No linting configured for home app"
+          fi
+
+      - name: Build check for home
+        run: |
+          echo "🏗️ Build check for home application..."
+          bunx nx build home
+
+          # 빌드 결과 확인
+          if [ -d "dist/apps/home" ]; then
+            echo "✅ Home build check passed"
+          else
+            echo "❌ Home build check failed"
+            exit 1
+          fi
