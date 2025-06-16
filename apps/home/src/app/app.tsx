@@ -1,5 +1,4 @@
 import { Routes, Route } from 'react-router-dom';
-import './app.module.scss';
 import Hero from './components/Hero';
 import About from './components/About';
 import Projects from './components/Projects';
