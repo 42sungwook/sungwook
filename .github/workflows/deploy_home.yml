@@ -74,9 +74,9 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      # main 브랜치에 푸시할 때만 배포 (PR은 제외)
+      # home 브랜치에 푸시할 때만 배포 (PR은 제외)
       - name: Deploy home to S3
-        if: env.HOME_EXISTS == 'true' && github.ref == 'refs/heads/main' && github.event_name == 'push'
+        if: env.HOME_EXISTS == 'true' && github.ref == 'refs/heads/home' && github.event_name == 'push'
         run: |
           echo "🚀 Deploying home to S3..."
 
@@ -87,7 +87,7 @@ jobs:
           echo "✅ Home deployed to S3"
 
       - name: Invalidate CloudFront cache
-        if: env.HOME_EXISTS == 'true' && github.ref == 'refs/heads/main' && github.event_name == 'push'
+        if: env.HOME_EXISTS == 'true' && github.ref == 'refs/heads/home' && github.event_name == 'push'
         run: |
           echo "🔄 Invalidating CloudFront cache..."
 

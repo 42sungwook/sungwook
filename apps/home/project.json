@@ -1,0 +1,69 @@
+{
+  "name": "home",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "apps/home/src",
+  "targets": {
+    "build": {
+      "executor": "@nx/rspack:rspack",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "target": "web",
+        "outputPath": "dist/apps/home",
+        "main": "./src/main.tsx",
+        "tsConfig": "./tsconfig.app.json",
+        "rspackConfig": "./rspack.config.js"
+      },
+      "configurations": {
+        "development": {
+          "mode": "development"
+        },
+        "production": {
+          "mode": "production",
+          "optimization": true,
+          "outputHashing": "all",
+          "sourceMap": false,
+          "namedChunks": false,
+          "extractLicenses": true,
+          "vendorChunk": false
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nx/rspack:dev-server",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "home:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "home:build:development"
+        },
+        "production": {
+          "buildTarget": "home:build:production",
+          "hmr": false
+        }
+      }
+    },
+    "preview": {
+      "executor": "@nx/rspack:preview-server",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "home:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "home:build:development"
+        },
+        "production": {
+          "buildTarget": "home:build:production"
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  },
+  "tags": ["type:app", "framework:react"]
+}
