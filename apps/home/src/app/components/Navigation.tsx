@@ -43,6 +43,15 @@ const Navigation: React.FC = () => {
           <li>
             <button onClick={() => scrollToSection('contact')}>Contact</button>
           </li>
+          <li>
+            <a
+              href="https://blog.sungwook.dev/"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              <button>Blog</button>
+            </a>
+          </li>
         </ul>
       </div>
     </nav>
