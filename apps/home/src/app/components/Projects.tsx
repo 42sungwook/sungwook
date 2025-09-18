@@ -4,21 +4,6 @@ import styles from './Projects.module.scss';
 
 const projects = Object.freeze([
   {
-    title: 'OasisW - (주)핏펀즈',
-    description:
-      '웹 브라우저를 이용해 게임 서버 인스턴스를 생성해주고 게임 서버 기능을 관리 및 운영할 수 있게 도와주는 클라우드 기반 개발도구입니다. 초기 프로젝트 설정부터 배포까지 Next.JS로 개발했습니다.',
-    technologies: [
-      'Next.js',
-      'TanStack-Query',
-      'TailwindCSS',
-      'shadcnUI',
-      'Apex Charts',
-      'Zustand',
-    ],
-    image: '/assets/oasis.png',
-    detailPage: '/projects/oasis',
-  },
-  {
     title: '42STAT',
     description:
       '42서울에서 진행한 프로젝트로, 42서울 교육생들의 통계를 보여주는 반응형 대시보드 웹서비스입니다. React와 GraphQL을 사용했으며 42서울 교육생 90% 이상이 사용하는 서비스로 2024년 2월 기준 DAU 100명 이상을 기록하고 있습니다.',

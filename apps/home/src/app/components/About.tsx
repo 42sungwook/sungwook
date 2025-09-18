@@ -52,12 +52,6 @@ const About: React.FC = () => {
                     <strong>(주)엘리스그룹</strong>
                   </div>
                 </div>
-                <div className={styles.detailItem}>
-                  <div className={styles.detailPeriod}>2024.05 - 2024.08</div>
-                  <div className={styles.detailContent}>
-                    <strong>(주)핏펀즈</strong>
-                  </div>
-                </div>
               </div>
             </div>
 

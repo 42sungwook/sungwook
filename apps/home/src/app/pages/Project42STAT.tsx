@@ -63,7 +63,7 @@ const Project42STAT: React.FC = () => {
           <p>
             <strong>2024.05 - 현재</strong>
             <br />
-            서비스 유지보수 및 개선
+            서비스 유지보수
           </p>
         </div>
 
