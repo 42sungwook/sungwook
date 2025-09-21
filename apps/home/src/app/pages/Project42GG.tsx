@@ -4,7 +4,7 @@ import ImageSlider from '../components/ImageSlider';
 import styles from './project.module.scss';
 
 const projectImages = Array.from(
-  { length: 12 },
+  { length: 11 },
   (_, i) => `/assets/42gg/42gg_${i + 1}.png`
 );
 

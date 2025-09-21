@@ -8,6 +8,26 @@ export default defineConfig({
   base: '/',
   icon: '/favicon.ico',
   globalStyles: join(__dirname, 'src/styles/index.css'),
+  head: [
+    [
+      'script',
+      {
+        async: true,
+        src: 'https://www.googletagmanager.com/gtag/js?id=G-XZJFCJNVTG',
+      },
+    ],
+    [
+      'script',
+      {},
+      `
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-XZJFCJNVTG');
+      `,
+    ],
+  ],
   builderConfig: {
     output: {
       distPath: {

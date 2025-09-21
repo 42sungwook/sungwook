@@ -104,6 +104,13 @@ const Hero: React.FC = () => {
             >
               프로젝트 보기
             </button>
+            <a
+              href="https://blog.sungwook.dev/"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              <button className={styles.secondaryButton}>블로그 보기</button>
+            </a>
             <button
               className={styles.secondaryButton}
               onClick={() =>

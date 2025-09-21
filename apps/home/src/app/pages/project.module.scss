@@ -82,14 +82,41 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
+  color: #4a5568;
+  text-decoration: none;
+  font-weight: 600;
+  padding: 1rem 2rem;
+  background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.githubLink:hover {
+  border-color: #cbd5e0;
+  background: linear-gradient(135deg, #edf2f7 0%, #e2e8f0 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.siteLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
   color: white;
   text-decoration: none;
   font-weight: 600;
   padding: 1rem 2rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
   border-radius: 12px;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 2px 8px rgba(66, 153, 225, 0.2);
+}
+
+.siteLink:hover {
+  background: linear-gradient(135deg, #3182ce 0%, #2c5282 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(66, 153, 225, 0.3);
 }
 
 .projectInfoGrid {
@@ -176,6 +203,7 @@
   border: 1px solid rgba(102, 126, 234, 0.1);
   position: relative;
   overflow: hidden;
+  margin-bottom: 2rem;
 }
 
 .roleSection h2 {
@@ -284,4 +312,9 @@
     font-size: 0.8rem;
     padding: 0.4rem 0.8rem;
   }
+}
+
+.buttonWrapper {
+  display: flex;
+  gap: 0.5rem;
 }
