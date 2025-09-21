@@ -1,0 +1,189 @@
+@use '../styles/mixins' as *;
+
+.imageSlider {
+  width: 100%;
+  margin-bottom: $spacing-xxl;
+}
+
+.sliderContainer {
+  position: relative;
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  border-radius: $border-radius-lg;
+  overflow: hidden;
+  box-shadow: $shadow-md;
+}
+
+.sliderContent {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  position: relative;
+}
+
+.sliderImage {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.sliderButton {
+  @include button-round;
+  @include glassmorphism;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  color: white;
+  font-size: 24px;
+  z-index: $z-index-base + 1;
+  opacity: 0;
+  pointer-events: none;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.9);
+    transform: translateY(-50%) scale(1.1);
+  }
+
+  &.prev {
+    left: 20px;
+  }
+
+  &.next {
+    right: 20px;
+  }
+
+  @include tablet {
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+
+    &.prev {
+      left: 15px;
+    }
+
+    &.next {
+      right: 15px;
+    }
+  }
+
+  @include mobile {
+    width: 35px;
+    height: 35px;
+    font-size: 18px;
+
+    &.prev {
+      left: 10px;
+    }
+
+    &.next {
+      right: 10px;
+    }
+  }
+}
+
+.imageSlider:hover .sliderButton {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.sliderDots {
+  position: absolute;
+  bottom: $spacing-md;
+  left: 50%;
+  transform: translateX(-50%);
+  @include flex-center;
+  gap: $spacing-sm;
+  @include glassmorphism;
+  padding: $spacing-sm $spacing-md;
+  border-radius: $border-radius-xl;
+  opacity: 0;
+  transition: opacity $transition-normal;
+
+  @include tablet {
+    padding: 6px 12px;
+  }
+
+  @include mobile {
+    display: none;
+  }
+}
+
+.imageSlider:hover .sliderDots {
+  opacity: 1;
+}
+
+.dot {
+  @include button-base;
+  width: 12px;
+  height: 12px;
+  border-radius: $border-radius-full;
+  background: rgba(255, 255, 255, 0.5);
+
+  &.active {
+    background: white;
+    transform: scale(1.1);
+  }
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.75);
+  }
+
+  @include tablet {
+    width: 10px;
+    height: 10px;
+  }
+}
+
+.sliderCounter {
+  text-align: center;
+  margin-top: $spacing-md;
+  color: $text-secondary;
+  font-size: 0.9rem;
+  font-weight: 500;
+  @include flex-center;
+  gap: $spacing-sm;
+  min-height: $spacing-xl;
+
+  @include tablet {
+    @include flex-column;
+    gap: $spacing-xs;
+    min-height: $spacing-xxl;
+  }
+}
+
+.autoSlideIndicator {
+  color: $primary-purple;
+  font-size: 0.8rem;
+  background: $primary-purple-light;
+  padding: $spacing-xs $spacing-sm;
+  border-radius: $border-radius-md;
+  border: 1px solid $primary-purple-border;
+  transition: opacity $transition-normal;
+  white-space: nowrap;
+
+  &.visible {
+    opacity: 1;
+    animation: pulse 2s infinite;
+  }
+
+  &.hidden {
+    opacity: 0;
+    animation: none;
+  }
+
+  @include tablet {
+    font-size: 0.75rem;
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}

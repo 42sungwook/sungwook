@@ -1,0 +1,62 @@
+.tooltipContainer {
+  display: inline-block;
+}
+
+.tooltip {
+  background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+  color: white;
+  padding: 0.2rem 1.4rem;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  white-space: nowrap;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  pointer-events: none;
+  width: max-content;
+  height: max-content;
+  max-width: 45vw;
+  transition: opacity 0.2s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.tooltip::before {
+  content: '';
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+}
+
+.tooltip.top::before {
+  top: 100%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.tooltip.right::before {
+  top: 50%;
+  left: 0;
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.tooltip.bottom::before {
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.tooltip.left::before {
+  top: 50%;
+  right: 0;
+  transform: translate(50%, -50%) rotate(45deg);
+}

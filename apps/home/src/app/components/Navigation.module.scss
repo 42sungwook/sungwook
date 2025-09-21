@@ -1,0 +1,92 @@
+@use '../styles/mixins' as *;
+
+.navigation {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.95);
+  opacity: 0.9;
+  backdrop-filter: blur(10px);
+  z-index: $z-index-modal;
+  transition: $transition-normal;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+
+  &.scrolled {
+    background: rgba(255, 255, 255, 0.98);
+    box-shadow: $shadow-sm;
+  }
+}
+
+.navContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  @include flex-between;
+  height: 70px;
+
+  @include tablet {
+    padding: 0 15px;
+  }
+}
+
+.navLogo {
+  span {
+    font-size: 1.5rem;
+    font-weight: 700;
+    @include text-gradient;
+  }
+}
+
+.navMenu {
+  display: flex;
+  list-style: none;
+  gap: $spacing-xl;
+  margin: 0;
+  padding: 0;
+
+  li {
+    button {
+      background: none;
+      border: none;
+      color: $text-primary;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      padding: $spacing-sm $spacing-md;
+      border-radius: 6px;
+      transition: $transition-normal;
+      position: relative;
+
+      &:hover {
+        color: $primary-purple;
+        background: $primary-purple-light;
+      }
+
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 0;
+        height: 2px;
+        background: linear-gradient(135deg, $primary-purple 0%, #764ba2 100%);
+        transition: width $transition-normal;
+      }
+
+      &:hover::after {
+        width: 80%;
+      }
+
+      @include tablet {
+        font-size: 0.9rem;
+        padding: 6px 12px;
+      }
+    }
+  }
+
+  @include tablet {
+    gap: $spacing-md;
+  }
+}
